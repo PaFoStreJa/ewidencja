@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8">
+    <title>Lista piosenek</title>
+    <style>
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Ogólne */
+        body {
+            font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background-attachment: fixed;
+            color: #e8e8e8;
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                    radial-gradient(circle at 20% 30%, rgba(120, 119, 198, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 70%, rgba(138, 43, 226, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Kontener */
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Nagłówek */
+        h1, h2 {
+            margin-bottom: 24px;
+            color: #ffffff;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+        }
+
+        /* Formularze */
+        form {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 28px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow:
+                    0 8px 32px rgba(0, 0, 0, 0.3),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            margin-bottom: 24px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        form:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                    0 12px 40px rgba(0, 0, 0, 0.4),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #b8b8d1;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]::placeholder,
+        input[type="number"]::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        input:focus {
+            border-color: #667eea;
+            outline: none;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        /* Przyciski */
+        button, .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before, .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        button:hover::before, .btn:hover::before {
+            left: 100%;
+        }
+
+        button:hover, .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        button:active, .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.5);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.5);
+        }
+
+        /* Lista piosenek */
+        .song-list {
+            list-style: none;
+        }
+
+        .song-list li {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            margin-bottom: 16px;
+            padding: 20px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        .song-list li:nth-child(1) { animation-delay: 0.1s; }
+        .song-list li:nth-child(2) { animation-delay: 0.2s; }
+        .song-list li:nth-child(3) { animation-delay: 0.3s; }
+        .song-list li:nth-child(4) { animation-delay: 0.4s; }
+        .song-list li:nth-child(5) { animation-delay: 0.5s; }
+
+        .song-list li:hover {
+            transform: translateX(8px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(102, 126, 234, 0.3);
+            box-shadow:
+                    0 8px 30px rgba(0, 0, 0, 0.3),
+                    0 0 0 1px rgba(102, 126, 234, 0.2);
+        }
+
+        .song-list li strong {
+            color: #ffffff;
+            font-size: 1.1rem;
+        }
+
+        .song-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .song-actions .btn {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+
+        /* Animacje */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                margin: 20px auto;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .song-list li {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .song-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Witaj w mojej ewidencji</h1>
+
+    <!-- Formularz wyszukiwania -->
+    <form method="get" action="/">
+        <label for="q">Wyszukaj piosenkę:</label>
+        <input type="text" id="q" name="q" placeholder="Wpisz nazwę...">
+        <button type="submit">Szukaj</button>
+    </form>
+
+    <a href="{{ url_for('add_item') }}" class="btn">Dodaj nową piosenkę</a>
+
+    {% if items %}
+    <h2>Lista piosenek:</h2>
+    <ul class="song-list">
+        {% for item in items %}
+        <li>
+            <div>
+                <strong>{{ item.name }}</strong> (strona: {{ item.page_number }})
+            </div>
+            <div class="song-actions">
+                <a href="{{ url_for('edit_item', item_id=item.id) }}" class="btn btn-secondary">Edytuj</a>
+                <form action="{{ url_for('delete_item', item_id=item.id) }}" method="post">
+                    <button type="submit" class="btn btn-danger">Usuń</button>
+                </form>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>Brak wyników.</p>
+    {% endif %}
+</div>
+</body>
+</html>
